@@ -16,6 +16,7 @@ If FileExists(@ScriptDir & "\server\mapache.exe") Then
   	FileChangeDir (@ScriptDir & "\server")
 	Run("mapache.exe", "", @SW_MINIMIZE)
 	ShellExecute("http://localhost:8800/doku.php")
+	Sleep(2000)
 	Menu()
 Else
 	MsgBox(16, "Error", "Missing \server\mapache.exe")
@@ -30,6 +31,9 @@ Func Menu()
 		TrayCreateItem("")
 		Local $idBrowseGH = TrayCreateItem("Browse GitHub website")
 		Local $idExploreGH = TrayCreateItem("Explore Documents\GitHub folder")
+	Else
+		Local $idBrowseGH = Null
+		Local $idExploreGH = Null
 	EndIf
 	TrayCreateItem("")
 	Local $idExit = TrayCreateItem("Exit")
