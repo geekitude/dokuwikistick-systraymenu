@@ -10,13 +10,43 @@ Opt("TrayAutoPause", 0)
 Opt("TrayMenuMode", 3)
 
 TraySetToolTip ("DokuWikiStick")
+Global $delay, $nobrowser
+If ($CmdLine[0] = 0) Then
+	$delay = 2000
+	$nobrowser = 0
+Else
+	For $param = 1 to ($CmdLine[0])
+		Select
+		Case StringLeft (StringLower($CmdLine[$param]), 7) = "/sleep:"
+			Local $sleep = StringSplit($CmdLine[$param], ":")
+			If ((Number($sleep[2]) > 0) And (Number($sleep[2]) <= 10) And (Number($sleep[2]) = Int(Number($sleep[2])))) Then
+				$delay = Int(Number($sleep[2])) * 1000
+			Else
+				$delay = "error"
+			EndIf
+		Case (StringLower($CmdLine[$param]) = "/nb")
+			$nobrowser = 1
+		Case Else
+			Help()
+		EndSelect
+	Next
+EndIf
 
 If FileExists(@ScriptDir & "\server\mapache.exe") Then
-	TrayTip("DokuWikiStick", "Starting MicroApache...", 2, 2)
+	If ($delay ="error") Then
+		TrayTip("DokuWikiStick", "Starting MicroApache (wrong sleep time given)...", 2, 2)
+		$delay = 2000
+	ElseIf ($delay > 0) Then
+		TrayTip("DokuWikiStick", "Starting MicroApache (sleeping " & $delay / 1000 &" secs)...", 2, 2)
+	Else
+		TrayTip("DokuWikiStick", "Starting MicroApache...", 2, 2)
+	EndIf
   	FileChangeDir (@ScriptDir & "\server")
 	Run("mapache.exe", "", @SW_MINIMIZE)
-	ShellExecute("http://localhost:8800/doku.php")
-	Sleep(2000)
+	If ($nobrowser = 0) Then
+		Sleep($delay)
+		ShellExecute("http://localhost:8800/doku.php")
+	EndIf
 	Menu()
 Else
 	MsgBox(16, "Error", "Missing \server\mapache.exe")
@@ -62,5 +92,18 @@ Func KillApache()
 	TrayTip("DokuWikiStick", "Killing MicroApache...", 2, 2)
 	Run("ApacheKill.exe")
 	Sleep(1000)
+	Exit
+EndFunc
+
+Func Help()
+	Local $help =  "DokuWikiStick.exe [options] " & @CRLF _
+		& @CRLF _
+		& "[options]:" & @CRLF _
+		& "/sleep:n = pause n seconds (0 to 10) between MicroApache start and Browse" & @CRLF _
+		& "/nb = no browser launched" & @CRLF _
+		& @CRLF _
+		& "By default, there will be a 2 seconds pause." & @CRLF _
+		& @CRLF
+	MsgBox(64, "Aide", $help)
 	Exit
 EndFunc
