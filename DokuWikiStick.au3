@@ -75,7 +75,7 @@ Func Menu()
 				TrayTip("DokuWikiStick", "Restarting MicroApache...", 2, 2)
 				Run("ApacheKill.exe")
 				Sleep(1000)
-				Run("mapache.exe")
+				Run("mapache.exe", "", @SW_MINIMIZE)
 			Case $idExploreDWS
 				ShellExecute(@ScriptDir)
 			Case $idBrowseGH
