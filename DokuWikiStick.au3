@@ -15,11 +15,8 @@ Opt("TrayMenuMode", 3)
 ; ============================
 ; == Global ==
 $Force = IniRead("DokuWikiStick.ini", "Browser", "Force", 0)
-If ($Force = 1) Then
-	$Browser = IniRead("DokuWikiStick.ini", "Browser", "Browser", "")
-Else
-	$Browser = ""
-EndIf
+$Browser = IniRead("DokuWikiStick.ini", "Browser", "Browser", "")
+
 
 TraySetToolTip ("DokuWikiStick")
 Global $delay, $nobrowser
@@ -57,8 +54,7 @@ If FileExists(@ScriptDir & "\server\mapache.exe") Then
 	Run("mapache.exe", "", @SW_MINIMIZE)
 	If ($nobrowser = 0) Then
 		Sleep($delay)
-		;MsgBox(0, "DokuWikiStick", $Browser)
-		If (FileExists($Browser)) Then
+		If (($Force = 1) And (FileExists($Browser))) Then
 			Run($Browser & " " & "http://localhost:8800/doku.php")
 		Else
 			ShellExecute("http://localhost:8800/doku.php")
@@ -87,7 +83,11 @@ Func Menu()
 	While 1
 		Switch TrayGetMsg()
 			Case $idBrowseDWS
-				ShellExecute("http://localhost:8800/doku.php")
+				If (($Force = 1) And (FileExists($Browser))) Then
+					Run($Browser & " " & "http://localhost:8800/doku.php")
+				Else
+					ShellExecute("http://localhost:8800/doku.php")
+				EndIf
 			Case $idRestart
 				TrayTip("DokuWikiStick", "Restarting MicroApache...", 2, 2)
 				Run("ApacheKill.exe")
