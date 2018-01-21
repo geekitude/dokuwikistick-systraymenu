@@ -4,10 +4,22 @@
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
 #include <Constants.au3>
+#include <File.au3>
 #include <WindowsConstants.au3>
 
 Opt("TrayAutoPause", 0)
 Opt("TrayMenuMode", 3)
+
+; ============================
+; == Read DokuWikiStick.ini ==
+; ============================
+; == Global ==
+$Force = IniRead("DokuWikiStick.ini", "Browser", "Force", 0)
+If ($Force = 1) Then
+	$Browser = IniRead("DokuWikiStick.ini", "Browser", "Browser", "")
+Else
+	$Browser = ""
+EndIf
 
 TraySetToolTip ("DokuWikiStick")
 Global $delay, $nobrowser
@@ -45,7 +57,12 @@ If FileExists(@ScriptDir & "\server\mapache.exe") Then
 	Run("mapache.exe", "", @SW_MINIMIZE)
 	If ($nobrowser = 0) Then
 		Sleep($delay)
-		ShellExecute("http://localhost:8800/doku.php")
+		;MsgBox(0, "DokuWikiStick", $Browser)
+		If (FileExists($Browser)) Then
+			Run($Browser & " " & "http://localhost:8800/doku.php")
+		Else
+			ShellExecute("http://localhost:8800/doku.php")
+		EndIf
 	EndIf
 	Menu()
 Else
