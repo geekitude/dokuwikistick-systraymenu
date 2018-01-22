@@ -19,6 +19,9 @@ Command line parameters :
   * /sleep:n : sleep n seconds between MicroApache and browser start (must be an integer between 0 and 10)
   * /nb : no browsing launched automatically
 
+Windows' default browser will be used unless you change the settings values in *DokuwikiStick.ini* file :
+  * set *Force* value to 1
+  * adapt the *Browser* value to reflect the path to desired browser executable
 
 The only file you need is the executable.
 If you don't want to download the exe file, here is how to compile the provided source file:
